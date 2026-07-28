@@ -51,6 +51,21 @@ jobs:
           echo "${{ secrets.MGC_KUBECONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
+
+      - name: Diagnóstico do kubeconfig
+        run: |
+          echo "=== Contexto ==="
+          kubectl config current-context
+
+          echo "=== Servidor ==="
+          kubectl config view --minify
+
+          echo "=== Cluster Info ==="
+          kubectl cluster-info
+
+          echo "=== Nodes ==="
+          kubectl get nodes    
+
       - name: Create Kubernetes Secret
         run: |
           kubectl create secret generic db-secret \
