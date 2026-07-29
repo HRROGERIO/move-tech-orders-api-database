@@ -1,25 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cloud-application
+  name: move-tech-orders-api
   labels:
-    app: cloud-application
+    app: move-tech-orders-api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: cloud-application
+      app: move-tech-orders-api
   template:
     metadata:
       labels:
-        app: cloud-application
+        app: move-tech-orders-api
     spec:
       imagePullSecrets:
         - name: mgc-registry-secret
 
       containers:
-        - name: cloud-application
-          image: container-registry.br-se1.magalu.cloud/${MGC_REGISTRY_NAME}/cloud-application:latest
+        - name: move-tech-orders-api
+          image: container-registry.br-se1.magalu.cloud/hrrogerio/move-tech-orders-api:latest
+          imagePullPolicy: Always
 
           env:
             - name: DATABASE_URL
@@ -30,29 +31,32 @@ spec:
 
           ports:
             - containerPort: 8000
+              name: http
 
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 10
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
 
           readinessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: http
             initialDelaySeconds: 5
-            periodSeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: cloud-application
+  name: move-tech-orders-api
 spec:
   selector:
-    app: cloud-application
+    app: move-tech-orders-api
   type: LoadBalancer
   ports:
     - port: 80
